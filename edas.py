@@ -1,14 +1,15 @@
-import os
-import time
-import warnings
-import numpy as np
+# Load libraries
+from scipy.stats import norm as norma
+from collections import defaultdict
+from matplotlib import pyplot
+import seaborn as sns
 import random as rnd
 import pandas as pd
-from collections import defaultdict
-
+import numpy as np
+import warnings
+import time
 # Librería Genética
 from deap import base, creator, tools, algorithms
-
 # Subfunciones de estimadores
 from sklearn.base import clone
 # [https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/base.py][30]
@@ -30,28 +31,32 @@ from sklearn.utils.validation import indexable
 # [https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/utils/validation.py][208]
 from multiprocessing import Pool
 
-# Selección para estimadores
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import KFold
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import RandomizedSearchCV
 
-# Metricas para estimadores
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import mean_squared_error
 
-# Estimadores
-from sklearn.ensemble import ExtraTreesClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import Normalizer
+from sklearn.preprocessing import MinMaxScaler
+
+from sklearn.decomposition import PCA
+from sklearn.feature_selection import SelectKBest
+
+from sklearn.pipeline import Pipeline
+from sklearn.pipeline import FeatureUnion
+# NonLinear Classification
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
+
+#seed = 7
 
 def _get_param_types_maxint(params):
 	params_data = list(params.items())  # name_values
@@ -60,7 +65,7 @@ def _get_param_types_maxint(params):
 	return params_data, params_type, params_size
 
 
-def _initIndividual(pcls, maxints):
+def _initIndividual(individuo, maxints):
 	"""[Iniciar Individuo]
 	Arguments:
 		pcls {[creator.Individual]} -- [Iniciar individuo con indices aleatorios]
@@ -68,8 +73,7 @@ def _initIndividual(pcls, maxints):
 	Returns:
 		[creator.Individual] -- [Creación de individuo]
 	"""
-	part = pcls(rnd.randint(0, maxint) for maxint in maxints)
-	return part
+	return individuo(rnd.randint(0, maxint) for maxint in maxints)
 
 
 def _mutIndividual(individual, maxints, prob_mutacion):
@@ -161,10 +165,12 @@ def _evalFunction(individual, name_values, X, y, scorer, cv, uniform, fit_params
 		score_cache[paramkey] = score
 	return (score,)
 
-class GeneticSearchCV:
+
+
+class EvolutiveSearchCV:
 	def __init__(self, estimator, params, scoring=None, cv=4,
 				refit=True, verbose=False, population_size=50,
-				gene_mutation_prob=0.1, gene_crossover_prob=0.5,
+				gene_mutation_prob=0.2, gene_crossover_prob=0.5,
 				tournament_size=3, generations_number=10, gene_type=None,
 				n_jobs=1, uniform=True, error_score='raise',
 				fit_params={}):
@@ -198,7 +204,7 @@ class GeneticSearchCV:
 		creator.create("FitnessMax", base.Fitness, weights=(1.0,))
 		# Individuo [list], parámetros:est, FinessMax
 		creator.create("Individual", list, est=clone(self.estimator), fitness=creator.FitnessMax)
-	@property
+	#@property
 	def cv_results_(self):
 		if self._cv_results is None:
 			out = defaultdict(list)
@@ -208,13 +214,13 @@ class GeneticSearchCV:
 			idxs, individuals, each_scores = zip(*[(idx, indiv, np.mean(indiv.fitness.values))
 											for idx, indiv in list(gen.genealogy_history.items())
 											if indiv.fitness.valid and not np.all(np.isnan(indiv.fitness.values))])
-			name_values, _, _ = _get_param_types_maxint(params)
+			name_values, _, _ = _get_param_types_maxint(self.params)
 			# Add to output
 			#out['param_index'] += [p] * len(idxs)
 			out['index'] += idxs
 			out['params'] += [_individual_to_params(indiv, name_values) for indiv in individuals]
-			out['mean_test_score'] += [np.nanmean(scores) for scores in each_scores]
-			out['std_test_score'] += [np.nanstd(scores) for scores in each_scores]
+			out['mean_test_score'] += [np.nanmean(scores)*100 for scores in each_scores]
+			out['std_test_score'] += [np.nanstd(scores)*100 for scores in each_scores]
 			out['min_test_score'] += [np.nanmin(scores) for scores in each_scores]
 			out['max_test_score'] += [np.nanmax(scores) for scores in each_scores]
 			out['nan_test_score?'] += [np.any(np.isnan(scores)) for scores in each_scores]
@@ -244,8 +250,8 @@ class GeneticSearchCV:
 		n_samples = _num_samples(X)
 		# verificar longitudes x,y 
 		if _num_samples(y) != n_samples:
-			raise ValueError('Target [y], data [X] no coinciden')
-		self.cv = check_cv(self.cv, y=y, classifier=is_classifier(self.estimator))
+			raise ValueError('Target [y], data [X] dont agree')
+		cv = check_cv(self.cv, y=y, classifier=is_classifier(self.estimator))
 		toolbox = base.Toolbox()
 		# name_values = lista de parametros, gene_type = [1:categorico; 2:numérico], maxints = size(parametros)
 		name_values, self.gene_type, maxints = _get_param_types_maxint(parameter_dict)
@@ -263,7 +269,7 @@ class GeneticSearchCV:
 		# registro de función Evaluación
 		toolbox.register("evaluate", _evalFunction,
 						name_values=name_values, X=X, y=y,
-						scorer=self.scorer_, cv=self.cv, uniform=self.uniform, verbose=self.verbose,
+						scorer=self.scorer_, cv=cv, uniform=self.uniform, verbose=self.verbose,
 						error_score=self.error_score, fit_params=self.fit_params,
 						score_cache=self.score_cache)
 		# registro de función Cruce
@@ -291,7 +297,8 @@ class GeneticSearchCV:
 		# Posibles combinaciones
 		if self.verbose:
 			print('--- Evolve in {0} possible combinations ---'.format(np.prod(np.array(maxints) + 1)))
-		pop, logbook = algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2,
+		pop, logbook = algorithms.eaSimple(pop, toolbox, cxpb=self.gene_crossover_prob, 
+										mutpb=self.gene_mutation_prob,
 										ngen=self.generations_number, stats=stats,
 										halloffame=hof, verbose=self.verbose)
 		#pop, logbook = algorithms.eaGenerateUpdate(toolbox,
@@ -303,9 +310,9 @@ class GeneticSearchCV:
 		# Mejor score y parametros
 		current_best_score_ = hof[0].fitness.values[0]
 		current_best_params_ = _individual_to_params(hof[0], name_values)
-		if self.verbose:
-			print("Best individual is: %s\nwith fitness: %s" % (
-				current_best_params_, current_best_score_))
+		#if self.verbose:
+		#	print("Best individual is: %s\nwith fitness: %s" % (
+		#		current_best_params_, current_best_score_))
 		if current_best_score_ > self.best_mem_score_:
 			self.best_mem_score_ = current_best_score_
 			self.best_mem_params_ = current_best_params_
@@ -315,95 +322,25 @@ class GeneticSearchCV:
 		self.best_score_ = current_best_score_
 		self.best_params_ = current_best_params_
 
-class EstimatorSelection:
-	"""[Clase de Estimación Lineal]
-	init: 	inicia los modelos, parámetros de entrada y 
-			grid_searches, resultados que se pueden obtener con get
-	fit:	Entrena los estimadores linealmente y se actualiza grid_searches
-			como diccionario de resultados por modelo
-	score:	Toma los resultados de todas las estimaciones y las une
-			para hacer un analisis comparativo
-	Fuente:	http://www.codiply.com/blog/hyperparameter-grid-search-across-multiple-models-in-scikit-learn/
-	"""
 
-	def __init__(self, models, params):
-		if not set(models.keys()).issubset(set(params.keys())):
-			missing_params = list(set(models.keys()) - set(params.keys()))
-			raise ValueError("Some estimators are missing parameters: %s" % missing_params)
-		self.models = models
-		self.params = params
-		self.keys = models.keys()
-		self.grid_searches = {}
-		self.result = {}
-		self.time_model ={} 
 
-	def fit(self, X, y, cv=KFold(n_splits=5), n_jobs=1, verbose=1, scoring=None, refit=False,
+
+def fitEvo(self, X, y, cv=4, n_jobs=1, verbose=1, scoring=None, refit=False,
 			population_size=50, gene_mutation_prob=0.10, gene_crossover_prob=0.5,
 			tournament_size=3, generations_number=10):
-		for key in self.keys:
-			print("Running GeneticSearch for %s." % key)
-			model = self.models[key]
-			params = self.params[key]
-			start = time.time()
-			gs = GeneticSearchCV(model, params, cv=cv, n_jobs=n_jobs,
-							verbose=verbose, scoring=scoring, refit=refit)
-			self.grid_searches[key] = gs.fit(X, y)
-			end = time.time()
-			self.time_model[key] = [end-start]
-
-	def score(self):
-		for estimator in self.keys:
-			d = {}
-			d['.Accuracy'] = self.grid_searches[estimator].cv_results_['mean_test_score']
-			d['.Error'] = self.grid_searches[estimator].cv_results_['std_test_score']
-			df1 = pd.DataFrame(d)
-			d = self.grid_searches[estimator].cv_results_['params']
-			df2 = pd.DataFrame(list(d))
-			self.result[estimator] = pd.concat([df1, df2], axis=1).fillna(' ')
-		return pd.concat(self.result).fillna(' ')
 
 
 
-# Lectura de los datos y separación
-dataset = pd.read_csv("raspberry/TransmisionInt.csv")
-validation_size = 0.20
-X = dataset.values[:, 0:dataset.shape[1] - 1].astype(float)
-Y = dataset.values[:, dataset.shape[1] - 1]
-# Split randomizando los datos
-x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=validation_size)
+model = self.models[key]
+params = self.params[key]
+def __init__(self, estimator, params, scoring=None, 
+			cv=4, refit=True, verbose=False, population_size=50,
+			gene_mutation_prob=0.2, gene_crossover_prob=0.5,
+			tournament_size=3, generations_number=10, gene_type=None,
+			n_jobs=1, uniform=True, error_score='raise',
+			fit_params={}):
 
-# Modelos para el Test
-models = { 
-    'ExtraTreesClassifier': ExtraTreesClassifier(),
-    'GradientBoostingClassifier': GradientBoostingClassifier(),
-    'SVC': SVC()
-}
-
-# Parametros de los modelos para el Test
-params = { 
-    'ExtraTreesClassifier': { 
-        'n_estimators': [10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30],
-    },
-    'GradientBoostingClassifier': { 
-        'n_estimators': [17, 22, 27, 32], 
-        'learning_rate': [0.3, 0.5, 0.8, 1.0],
-    },
-    'SVC': {
-        'kernel': ['rbf'], 
-        'C': [1, 3, 5, 7, 9], 
-        'gamma': [0.1, 0.01, 0.001, 0.0001],
-    }
-}       
-
-params = {
-	'k-NN': {
-		'beacons_' : ['Be01', 'Be02', 'Be03', 'Be04', 'Be05']
-		'freq_' : ['Tx_0x01', 'Tx_0x02', 'Tx_0x03', 'Tx_0x04', 'Tx_0x05', 'Tx_0x06', 'Tx_0x07']
-	}
-}
-potencia = list(range(1,8))
-'Tx_0x0'+str(potencia)
-
-helper = EstimatorSelection(models, params)
-helper.fit(x_train, y_train, scoring="accuracy", n_jobs=4, tournament_size=3,
-	population_size=20, gene_mutation_prob=0.20, gene_crossover_prob=0.6, generations_number=10)
+gs = EvolutiveSearchCV(model, params, cv=4, n_jobs=1, verbose=1, scoring=None, refit=False,
+			population_size=50, gene_mutation_prob=0.10, gene_crossover_prob=0.5,
+			tournament_size=3, generations_number=10)
+gs.fit(X, y)
