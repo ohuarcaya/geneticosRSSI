@@ -1,6 +1,7 @@
 """
 Extracción
 """
+from sklearn.utils import shuffle
 import pandas as pd
 import numpy as np
 
@@ -21,7 +22,8 @@ frecuencias[5] = shuffle(frecuencias[5], random_state=7).reset_index(drop=True)
 frecuencias[6] = shuffle(frecuencias[6], random_state=7).reset_index(drop=True)
 
 names_ = frecuencias[0].columns.values
-values = np.random.randint(6,size=5)
+values = np.random.randint(6,size=5) # orden randomización
+# dataset creado a partir de randomización
 dataset = pd.DataFrame()
 dataset[names_[0]] = frecuencias[values[0]][names_[0]]
 dataset[names_[1]] = frecuencias[values[1]][names_[1]]
@@ -29,8 +31,8 @@ dataset[names_[2]] = frecuencias[values[2]][names_[2]]
 dataset[names_[3]] = frecuencias[values[3]][names_[3]]
 dataset[names_[4]] = frecuencias[values[4]][names_[4]]
 dataset[names_[5]] = frecuencias[0][names_[5]]
-
+# separación de data en X,y 
 y = dataset[names_[5]]
 del dataset[names_[5]]
-X = dataset	# .drop(names_[5], axis=1, inplace=True)
+X = dataset	
 #x_train,x_test,y_train,y_test=train_test_split(X,y,test_size=0.25, random_state=7)
