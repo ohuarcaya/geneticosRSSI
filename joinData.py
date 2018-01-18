@@ -5,14 +5,14 @@ import pandas as pd
 import numpy as np
 
 names_ = ['Sector', 'Be01', 'Be02', 'Be03', 'Be04', 'Be05']
-frecuencias = [pd.DataFrame() for i in range(7)]
+frecuencias = [pd.DataFrame() for i in range(6)]
 for sector in range(1,16):
-	for potencia in range(1,8):
+	for potencia in range(1,7):
 		frecuencias[potencia-1] = frecuencias[potencia-1].append(pd.read_csv("Raspberri/Tx_0x0"+str(potencia)+"/test"+str(sector)+".csv", names=names_))
-	corte = min([frecuencias[i].shape[0] for i in range(7)])
-	frecuencias = [frecuencias[potencia-1][:corte] for potencia in range(1,8)]
+	corte = min([frecuencias[i].shape[0] for i in range(6)])
+	frecuencias = [frecuencias[potencia-1][:corte] for potencia in range(1,7)]
 
-for i in range(1,8):
+for i in range(1,7):
 	frecuencias[i-1] = frecuencias[i-1][['Be01', 'Be02', 'Be03', 'Be04', 'Be05', 'Sector']]
 	frecuencias[i-1].to_csv('Tx_0x0'+str(i), sep=',', index=False) 
 

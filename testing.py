@@ -42,8 +42,11 @@ def _individual_to_params(individual, frecuencias):
 	"""
 	return dict((name, values[gene]) for gene, (name, values) in zip(individual, name_values))
 
-
-def _evalFunction(individual, frecuencias, scorer="accuracy", cv, uniform, fit_params,
+def _evalFunction(individual, estimator, frecuencias, scorer, num_folds, uniform, fit_params,
+				verbose=0, error_score='raise', score_cache={}):
+	"""[Evaluación del modelo]
+	"""
+def _evalFunction(individual, frecuencias, scorer, cv, uniform, fit_params,
 				verbose=0, error_score='raise', score_cache={}):
 	"""[Evaluación del modelo]
 	Arguments:
@@ -96,7 +99,7 @@ def fit(frecuencias):# frecuencias
 		else:
 			best_estimator_.fit(frecuencias)
 
-def _fit(self, frecuencias, parameter_dict):
+	def _fit(self, frecuencias, parameter_dict):
 		self._cv_results = None  # Indicador de necesidad de actualización
 		self.scorer_ = check_scoring(self.estimator, scoring=self.scoring)
 		#n_samples = _num_samples(X)
@@ -121,8 +124,8 @@ def _fit(self, frecuencias, parameter_dict):
 		toolbox.register("map", pool.map)
 		# registro de función Evaluación
 		toolbox.register("evaluate", _evalFunction,
-						name_values=name_values, frecuencias,
-						scorer=self.scorer_, cv=cv, uniform=self.uniform, verbose=self.verbose,
+						frecuencias=self.frecuencias,
+						scorer=self.scorer_, num_folds=4, uniform=self.uniform,
 						error_score=self.error_score, fit_params=self.fit_params,
 						score_cache=self.score_cache)
 		# registro de función Cruce
@@ -174,3 +177,26 @@ def _fit(self, frecuencias, parameter_dict):
 		pool.join()
 		self.best_score_ = current_best_score_
 		self.best_params_ = current_best_params_
+
+	def cv_results_(self):
+		if self._cv_results is None:
+			out = defaultdict(list)
+			gen = self.all_history_
+			# Get individuals and indexes, their list of scores,
+			# and additionally the name_values for this set of parameters
+			idxs, individuals, each_scores = zip(*[(idx, indiv, np.mean(indiv.fitness.values))
+											for idx, indiv in list(gen.genealogy_history.items())
+											if indiv.fitness.valid and not np.all(np.isnan(indiv.fitness.values))])
+			#name_values, _, _ = _get_param_types_maxint(self.params)
+			# Add to output
+			#out['param_index'] += [p] * len(idxs)
+			out['index'] += idxs
+			#out['params'] += [_individual_to_params(indiv, name_values) for indiv in individuals]
+			out['params'] += [list(indiv) for indiv in individuals]
+			out['mean_test_score'] += [np.nanmean(scores)*100 for scores in each_scores]
+			out['std_test_score'] += [np.nanstd(scores)*100 for scores in each_scores]
+			out['min_test_score'] += [np.nanmin(scores) for scores in each_scores]
+			out['max_test_score'] += [np.nanmax(scores) for scores in each_scores]
+			out['nan_test_score?'] += [np.any(np.isnan(scores)) for scores in each_scores]
+			self._cv_results = out
+		return self._cv_results
