@@ -17,7 +17,7 @@ def getAccuracy( frecuencias, individual, estimator, score_cache ):
 	if paramkey in score_cache:
 		score = score_cache[paramkey]
 	else:
-		kfold = KFold(n_splits=10)
+		kfold = KFold(n_splits=10, shuffle=False)
 		cv_results = cross_val_score(estimator, X, y, cv=kfold, scoring=scorer)
 		score = np.mean(cv_results)
 		score_cache[paramkey] = score
@@ -42,8 +42,8 @@ class eda:
 	def __init__(self, of, frecuencias, estimator):
 		# Algorithm parameters
 		self.iterations = 100
-		self.sample_size = 100
-		self.select_ratio = 0.5
+		self.sample_size = 60
+		self.select_ratio = 0.6
 		self.epsilon = 10e-6
 
 		# class members
@@ -53,7 +53,7 @@ class eda:
 		self.means = []
 		self.stdevs = []	
 
-		self.debug = False
+		self.debug = True
 		# aditional parameters
 		self.frecuencias = frecuencias
 		self.estimator = estimator
@@ -113,6 +113,7 @@ class eda:
 		for i in range( self.sample_size ):
 			# draw in random normal
 			p = np.random.normal( self.means, self.stdevs )
+			p = np.array([0 if i<0 else (5 if i>5 else i) for i in p])
 			# put it into the sample
 			self.sample[i][:self.dimensions] = np.round(p)%(self.dimensions+1)
 
@@ -170,7 +171,7 @@ class eda:
 		# sort the final sample
 		self.sample_sort()
 		# output the optimum
-		ranking = 25
+		ranking = self.sample_size
 		print ("#[ Configuración ]\t Accuracy")
 		for i in range(ranking):
 			linea = str(self.sample[-i-1][:-1]) + "\t" +str(self.sample[-i-1][-1])
@@ -196,7 +197,7 @@ if __name__=="__main__":
 	frecuencias[4] = shuffle(frecuencias[4], random_state=seed).reset_index(drop=True)
 	frecuencias[5] = shuffle(frecuencias[5], random_state=seed).reset_index(drop=True)
 	frecuencias[6] = shuffle(frecuencias[6], random_state=seed).reset_index(drop=True)
-	estimator = KNeighborsClassifier()
+	estimator = KNeighborsClassifier(n_jobs=-1)
 	a = eda( getAccuracy, frecuencias, estimator )
 	a.run()
 
