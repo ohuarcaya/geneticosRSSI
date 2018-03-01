@@ -2,8 +2,11 @@
 Preparación de data por niveles de frecuencia
 __Pendientes__
 
-1. grid search mejores configuraciones
+Luego ir sacando lo siguiente:
 
+1.  Sacar resultados de configuraciones probando todas las combinaciones para contrastar (Creo que lo tenías ya) [listo]
+2.  Utilizar Gridsearch para las mejores combinaciones de EAS [listo]
+3.  Sacar Error medio, accuracy, runtime (tiempo de ejecución de la mejor configuración de cada algoritmo) y boxplots, barplots
 
 __Lectura__
 
