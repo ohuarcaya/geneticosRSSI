@@ -1,0 +1,11 @@
+Estimando  SVC
+Estimando  GaussianNB
+Estimando  MLPClassifier
+Estimando  KNeighborsClassifier
+Estimando  DecisionTreeClassifier
+Estimando  LogisticRegression
+Estimando  ExtraTreesClassifier
+Estimando  AdaBoostClassifier
+Estimando  RandomForestClassifier
+Estimando  GradientBoostingClassifier
+Estimando  VotingClassifier
