@@ -1,0 +1,14 @@
+MODELO,CONFIGURACION,,,RANKING,,GENERACION,,INDIVIDUOS EVALUADOS,
+,EAS,EDAS,BEST,EAS,EDAS,EAS,EDAS,EAS,EDAS
+GradientBoostingClassifier,[6 1 3 3 5],[6 1 3 3 5],[6 1 3 3 5],1,1,9,9,425,926
+VotingClassifier,[6 1 3 3 5],[6 1 2 3 5],[6 1 3 3 5],1,7,5,4,426,866
+RandomForestClassifier,[6 1 3 3 5],[6 1 3 3 3],[6 1 3 3 5],1,5,6,4,408,710
+ExtraTreesClassifier,[6 1 3 3 5],[6 1 3 3 3],[6 1 3 3 5],1,2,4,5,341,808
+AdaBoostClassifier,[6 1 3 3 1],[4 1 3 3 5],[6 1 3 6 5],11,39,5,2,358,702
+KNeighborsClassifier,[6 1 3 6 1],[6 1 2 3 1],[6 1 3 6 1],1,8,2,4,368,672
+GaussianNB,[4 1 2 6 1],[6 1 3 3 1],[4 1 2 6 1],1,5,7,11,439,749
+DecisionTreeClassifier,[6 1 3 3 5],[6 1 3 3 3],[6 1 3 6 5],2,3,9,4,421,775
+SVC,[6 6 3 3 5],[6 6 3 3 5],[6 1 6 6 1],3,3,2,9,402,808
+LinearDiscriminantAnalysis,[6 1 3 3 5],[5 1 3 3 1],[6 1 3 3 5],1,26,6,5,460,782
+LogisticRegression,[4 1 2 3 1],[6 1 2 3 5],[4 1 2 3 1],1,4,6,4,334,768
+MLPClassifier,[4 1 4 6 1],[4 1 2 1 1],[4 1 4 6 1],1,10,8,12,386,785
