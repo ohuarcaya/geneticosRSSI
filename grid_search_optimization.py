@@ -101,10 +101,11 @@ def set_config():
     top_conf['RandomForestClassifier']  =   np.array([6, 1, 3, 3, 5])-1
     top_conf['ExtraTreesClassifier']    =   np.array([6, 1, 3, 3, 5])-1
     top_conf['GradientBoostingClassifier']  =   np.array([6, 1, 3, 3, 5])-1
-    top_conf['AdaBoostClassifier']  =   np.array([6, 1, 3, 6, 5])-1#np.array([6, 1, 3, 3, 1])-1#6
+    top_conf['AdaBoostClassifier']  =   np.array([6, 1, 3, 6, 5])-1#np.array([6, 1, 3, 3, 1])-1 #6
     top_conf['VotingClassifier']    =   np.array([6, 1, 3, 3, 5])-1
     return top_conf
-    
+   
+
 def set_models():
     rs = 1
     models = []
@@ -116,17 +117,13 @@ def set_models():
     models.append(('SVC', SVC(random_state=rs)))
     models.append(('DecisionTreeClassifier', DecisionTreeClassifier(random_state=rs)))
     models.append(('KNeighborsClassifier', KNeighborsClassifier()))
-    
     models.append(('RandomForestClassifier', RandomForestClassifier(random_state=rs)))
     # Bagging and Boosting
     # models.append(('ExtraTreesClassifier', ExtraTreesClassifier(n_estimators=150)))
     models.append(('ExtraTreesClassifier', ExtraTreesClassifier(random_state=rs)))
-    
     # models.append(('AdaBoostClassifier', AdaBoostClassifier(DecisionTreeClassifier())))
-    
     models.append(('GradientBoostingClassifier',GradientBoostingClassifier(random_state=rs)))
-    models.append(('AdaBoostClassifier', AdaBoostClassifier(DecisionTreeClassifier(random_state=rs),
-                                                            random_state=rs)))
+    models.append(('AdaBoostClassifier', AdaBoostClassifier(DecisionTreeClassifier(random_state=rs),random_state=rs)))
     # models.append(('GradientBoostingClassifier', GradientBoostingClassifier()))
     # Voting
     estimators = []
@@ -135,6 +132,7 @@ def set_models():
     voting = VotingClassifier(estimators)
     models.append(('VotingClassifier', voting))
     return models
+
 
 test_size = 0.2
 num_folds = 10
@@ -181,6 +179,7 @@ def distance_error(estimator, X, y):
     err_distance = np.sqrt(vx*vx + vy*vy)
     return err_distance
 
+
 #def _createDataset(frecuencias, values, seed = 7):
 def _createDataset(frecuencias, values):
     from sklearn.utils import shuffle as shuff
@@ -210,6 +209,7 @@ def _createDataset(frecuencias, values):
     X = salida_final[names_[:-1]]
     y = salida_final[names_[-1]]
     return X,y
+
 
 # The problem to optimize
 def getAccuracy( frecuencias, individual, estimator, score_cache, resultados ):
@@ -285,6 +285,7 @@ def adaboost_param():
     }
     return parameters
 
+
 def voting_param():
     parameters = {
         # 'selector__extraTC__n_estimators': [10],
@@ -300,6 +301,7 @@ def voting_param():
     }
     return parameters
 
+
 def gradientboosting_param():
     parameters = {
         # 'selector__extraTC__n_estimators': [10],
@@ -314,10 +316,11 @@ def gradientboosting_param():
         'GradientBoostingClassifier__n_estimators': [100, 200, 300],
         'GradientBoostingClassifier__max_depth': [3, 6, 9],
         'GradientBoostingClassifier__learning_rate': [0.01, 0.1, 0.3],
-        'GradientBoostingClassifier__max_features' : ["sqrt", "log2", None],
-        'GradientBoostingClassifier__loss' : ['deviance', 'exponential']
+        'GradientBoostingClassifier__max_features' : ["sqrt", "log2", None]#,
+        #'GradientBoostingClassifier__loss' : ['deviance', 'exponential']
     }
     return parameters
+
 
 def extratrees_param():       
     parameters = {
@@ -341,6 +344,7 @@ def extratrees_param():
     }
     return parameters
 
+
 def randomforest_param():
     parameters = {
         # 'selector__extraTC__n_estimators': [10],
@@ -363,6 +367,7 @@ def randomforest_param():
     }    
     return parameters
 
+
 def decisiontree_param():
     parameters = {
         # 'selector__extraTC__n_estimators':  [10],
@@ -384,6 +389,7 @@ def decisiontree_param():
     }
     return parameters
 
+
 def lda_param():
     parameters = {
         # 'selector__extraTC__n_estimators':  [10],
@@ -398,6 +404,7 @@ def lda_param():
         'LinearDiscriminantAnalysis__solver': ['svd', 'lsqr', 'eigen']
     }
     return parameters
+
 
 def svc_param():
     parameters = {
@@ -418,6 +425,7 @@ def svc_param():
     }
     return parameters
 
+
 def knn_param():
     parameters = {
         # 'selector__extraTC__n_estimators':  [10, 15],
@@ -435,6 +443,7 @@ def knn_param():
     }
     return parameters
 
+
 def logistic_param():
     parameters = {
         # 'selector__extraTC__n_estimators':  [10],
@@ -449,10 +458,11 @@ def logistic_param():
         # 'LogisticRegression__solver': ['newton-cg','lbfgs','liblinear','sag'],
         'LogisticRegression__solver': ['newton-cg','lbfgs', 'sag'],
         'LogisticRegression__warm_start': [True,False],        
-        'LogisticRegression__multi_class' = ['ovr', 'multinomial'],
-        'LogisticRegression__C' = [0.8, 0.9, 1.0, 1.1, 1.2]
+        'LogisticRegression__multi_class' : ['ovr', 'multinomial'],
+        'LogisticRegression__C' : [0.8, 0.9, 1.0, 1.1, 1.2]
     }
     return parameters
+
 
 def naivebayes_param():
     parameters = {
@@ -466,6 +476,7 @@ def naivebayes_param():
         'GaussianNB__priors': [None]
     }
     return parameters
+
 
 def mlperceptron_param():
     parameters = {
@@ -482,6 +493,7 @@ def mlperceptron_param():
         'MLPClassifier__alpha' : np.logspace(-5, 3, 5)
     }
     return parameters
+
 
 def get_params(model):
     if model == 'AdaBoostClassifier':
@@ -542,14 +554,14 @@ for name, model in estimators:
         # Por dataframe
         dfcv = pd.DataFrame(grid_search_t.cv_results_)
         dfcv['values'] = pd.DataFrame(grid_search_t.grid_scores_)['cv_validation_scores']
-        dfcv['Model'] = name_test
+        dfcv['Model'] = name
         column_head = ['Model', 'mean_test_score', 'std_test_score', 'mean_fit_time', 'mean_score_time', 'values', 'params']
-        dfcv = dfcv[column_head].sort_values('mean_test_score', ascending=False).head(3)
+        dfcv = dfcv[column_head].sort_values('mean_test_score', ascending=False)#.head(5)
         lista_df[indice] =dfcv
-
     except:
-        lista_reporte.append({})
-        lista_df[indice] = 1
+        print ('\n\n\nERROR CON ', name,'\n\n\n')
+        #lista_reporte.append({})
+        #lista_df[indice] = 1
     indice = indice + 1
 
 
@@ -559,7 +571,7 @@ fulldf = pd.DataFrame(lista_reporte).sort_values(['best_score'],ascending=False)
 fulldf[['modelo', 'best_score', 'fits', 'parametros']].to_csv('fullGridSearch.csv', sep=',', index=False)
 #display(fulldf)
 
-for i in range(len(lista_df)):
+for i in range(len(lista_reporte)):
     df = lista_df[i].sort_values(['mean_test_score'],ascending=False)
-    name = df['Model'][0]
-    df[['Model', 'mean_test_score', 'mean_fit_time', 'mean_score_time', 'std_score_time', 'params']].to_csv('_'+name'_gs.csv', sep=',', index=False)
+    name = list(df['Model'])[0]
+    df[['Model', 'mean_test_score', 'std_test_score', 'mean_fit_time', 'mean_score_time', 'params']].to_csv('_'+name+'_gs.csv', sep=',', index=False)
