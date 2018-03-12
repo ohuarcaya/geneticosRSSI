@@ -1,0 +1,3 @@
+Model,mean_test_score,std_test_score,mean_fit_time,mean_score_time,params
+VotingClassifier,0.9137760158572844,0.014210838053824188,5.269901061058045,0.01654098033905029,{'voting': 'soft'}
+VotingClassifier,0.904360753221011,0.010360290036703136,5.86977002620697,0.022270059585571288,{'voting': 'hard'}

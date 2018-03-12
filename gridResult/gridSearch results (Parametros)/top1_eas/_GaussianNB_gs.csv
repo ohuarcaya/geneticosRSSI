@@ -1,0 +1,2 @@
+Model,mean_test_score,std_test_score,mean_fit_time,mean_score_time,params
+GaussianNB,0.8601297764960346,0.017095999707744232,0.006369972229003906,0.0024012088775634765,{'priors': None}
