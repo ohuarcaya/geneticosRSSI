@@ -1,12 +1,14 @@
 # geneticosRSSI
-Preparación de data por niveles de frecuencia
+Agrupación de por niveles de frecuencia, para optmizar la precisión
+
 __Pendientes__
 
 Luego ir sacando lo siguiente:
 
-1.  Sacar resultados de configuraciones probando todas las combinaciones para contrastar (Creo que lo tenías ya) [listo]
-2.  Utilizar Gridsearch para las mejores combinaciones de EAS [listo]
-3.  Sacar Error medio, accuracy, runtime (tiempo de ejecución de la mejor configuración de cada algoritmo) y boxplots, barplots
+1. ExtraTrees ha bajado, revisar configuración de hiperparámetros.
+2. Revisar hiperparámetros de SVC (sale igual) y revisar DecissionTree(sube error u accuracy).
+3. Entregar espacio de hiperparámetros.
+4. Redactar solicitud investigacion y laboral ready e impreso.
 
 __Lectura__
 
