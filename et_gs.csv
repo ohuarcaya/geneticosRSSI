@@ -1,0 +1,2 @@
+modelo,best_score,fits,parametros
+ExtraTreesClassifier,0.91,112500,"{'min_samples_leaf': 3, 'n_estimators': 20, 'max_leaf_nodes': None, 'max_depth': None, 'class_weight': None, 'max_features': 'sqrt', 'criterion': 'gini'}"

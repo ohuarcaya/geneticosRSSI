@@ -13,3 +13,5 @@ Luego ir sacando lo siguiente:
 __Lectura__
 
 1. http://ai.ms.mff.cuni.cz/~sui/Posik20101021.pdf
+
+
