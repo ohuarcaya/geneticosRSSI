@@ -333,12 +333,12 @@ def extratrees_param():
         #'selector__pca__svd_solver': ['full', 'arpack', 'randomized'],
         # 'selector__pca__whiten': [True],
         #'selector__pca__whiten': [True,False],
-        'ExtraTreesClassifier__n_estimators': [10, 15, 20],
+        'ExtraTreesClassifier__n_estimators': [10, 12, 15, 18, 20],
         'ExtraTreesClassifier__criterion': ['gini', 'entropy'],
         'ExtraTreesClassifier__min_samples_leaf': [1, 2, 3, 4, 5],
         #'ExtraTreesClassifier__min_samples_leaf': range(200,1001,200),
-        'ExtraTreesClassifier__max_leaf_nodes': [3, 5, 7, 9],
-        'ExtraTreesClassifier__max_depth': [2, 3, 4, 5],
+        'ExtraTreesClassifier__max_leaf_nodes': [3, 5, 7, 9, None],
+        'ExtraTreesClassifier__max_depth': [2, 3, 4, 5, None],
         'ExtraTreesClassifier__max_features' : [None, 'sqrt', 'log2'],
         'ExtraTreesClassifier__class_weight' : ['balanced_subsample', None, 'balanced']
     }
@@ -419,9 +419,11 @@ def svc_param():
         #'selector__pca__whiten': [True,False],
         'SVC__kernel': ['linear','poly', 'rbf','sigmoid'],
         # 'SVC__kernel': ['rbf'],
-        'SVC__C': [1, 10, 25, 50, 100],
-        'SVC__decision_function_shape': ['ovo','ovr']
-        # 'SVC__decision_function_shape': ['ovr']
+        'SVC__shrinking': [True, False],
+        'SVC__C': [1, 2, 5, 10],
+        'SVC__degree': [1, 2, 3, 4, 5],
+        #'SVC__decision_function_shape': ['ovo','ovr']
+        'SVC__decision_function_shape': ['ovr']
     }
     return parameters
 
@@ -436,7 +438,7 @@ def knn_param():
         #'selector__pca__svd_solver': ['full', 'arpack', 'randomized'],
         # 'selector__pca__whiten': [True],
         #'selector__pca__whiten': [True,False],
-        'KNeighborsClassifier__n_neighbors': [1, 3, 5,7,9,11],
+        'KNeighborsClassifier__n_neighbors': [1, 3, 5, 7, 9, 11],
         'KNeighborsClassifier__weights': ['uniform','distance'],
         'KNeighborsClassifier__algorithm': ['ball_tree','kd_tree','brute']
         # 'KNeighborsClassifier__algorithm': ['auto']
@@ -456,8 +458,8 @@ def logistic_param():
         #'selector__pca__whiten': [True,False],
         #'LogisticRegression__penalty': ['l2'], #, 'l1'
         # 'LogisticRegression__solver': ['newton-cg','lbfgs','liblinear','sag'],
-        'LogisticRegression__solver': ['newton-cg','lbfgs', 'sag'],
-        'LogisticRegression__warm_start': [True,False],        
+        'LogisticRegression__solver': ['newton-cg', 'lbfgs', 'sag'],
+        'LogisticRegression__warm_start': [True, False],        
         'LogisticRegression__multi_class' : ['ovr', 'multinomial'],
         'LogisticRegression__C' : [0.8, 0.9, 1.0, 1.1, 1.2]
     }
@@ -575,3 +577,25 @@ for i in range(len(lista_reporte)):
     df = lista_df[i].sort_values(['mean_test_score'],ascending=False)
     name = list(df['Model'])[0]
     df[['Model', 'mean_test_score', 'std_test_score', 'mean_fit_time', 'mean_score_time', 'params']].to_csv('_'+name+'_gs.csv', sep=',', index=False)
+
+
+"""
+**GradientBoostingClassifier        max_features='sqrt', learning_rate=0.1, max_depth=3, n_estimators=100
+**VotingClassifier      voting='soft'
+**AdaBoostClassifier        n_estimators=500, algorithm='SAMME', learning_rate=2.0
+**RandomForestClassifier        max_depth=20, class_weight=None, max_features='sqrt', criterion='gini', warm_start=True, n_estimators=30
+**AdaBoostClassifier        algorithm='SAMME.R', learning_rate=2.0, n_estimators=500
+**KNeighborsClassifier      n_neighbors=5, weights='distance', algorithm='ball_tree'
+**DecisionTreeClassifier        max_features=None, splitter='best', criterion='entropy', class_weight=None, max_depth=10
+**GaussianNB        priors=None
+**DecisionTreeClassifier        class_weight=None, splitter='best', max_features=None, max_depth=10, criterion='entropy'
+**SVC       C=10, kernel='poly', decision_function_shape='ovo'
+**SVC       decision_function_shape='ovo', kernel='rbf', C=1
+**ExtraTreesClassifier      max_depth=5, class_weight='balanced_subsample', min_samples_leaf=1, max_features='sqrt', max_leaf_nodes=9, criterion='gini', n_estimators=15
+**LinearDiscriminantAnalysis        solver='eigen'
+**LogisticRegression        C=0.9, multi_class='multinomial', solver='newton-cg', warm_start=True
+**MLPClassifier     hidden_layer_sizes=100, alpha=1.0000000000000001e-05, activation='tanh', solver='adam', learning_rate='invscaling'
+
+
+
+"""

@@ -5,10 +5,10 @@ __Pendientes__
 
 Luego ir sacando lo siguiente:
 
-1. ExtraTrees ha bajado, revisar configuración de hiperparámetros.
+1. ExtraTrees ha bajado, revisar configuración de hiperparámetros. ***listo***
 2. Revisar hiperparámetros de SVC (sale igual) y revisar DecissionTree(sube error u accuracy).
-3. Entregar espacio de hiperparámetros.
-4. Redactar solicitud investigacion y laboral ready e impreso.
+3. Entregar espacio de hiperparámetros. ***listo***
+4. Redactar solicitud investigacion y laboral ready e impreso. ***listo***
 
 __Lectura__
 
