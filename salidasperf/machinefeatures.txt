@@ -1,0 +1,10 @@
+procesador Intel core i7.4790 3.60 GHz x8
+ram 7,7 Gb
+ubuntu 16.04 LTS 64 bits
+perf version 4.4.98
+python 3.5.2	[GCC 5.4.0 20160609] on linux
+numpy 1.11.0
+sklearn 0.19.1
+pandas 0.17.1
+seaborn 0.8.1
+matplotlib 1.5.1

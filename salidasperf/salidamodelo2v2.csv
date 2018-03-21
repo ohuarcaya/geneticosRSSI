@@ -1,0 +1,4 @@
+tiempo(Segundos);energia(Joules);ciclos;instrucciones;inst/ciclo;porcentajecpu
+0.001483026;0.03;  9115759; 9254782 ;1.02;38.28;
+0.001578420;0.03;  8765497; 7657414 ;0.87;12.28;
+0.001460486;0.01;  3068024; 1485275 ;0.48;;
